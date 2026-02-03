@@ -103,7 +103,113 @@ public class UnionFind {
             }
         }
     }
+
+    // return true if two elements are in the same 'set'; false otherwise
+    public boolean unionfind(int i, int j) {
+        return id[i] == id[j];
+    }
 }
 ```
 
 The above discussion and program should make it pretty clear that `UnionFind` has a big-O of `O(n)` since the `union()` function requires passing through the entire array.
+
+## Lecture 3 (1/27)
+How do we improve UnionFind - i.e. how can we make it faster? Consider a set of 'nodes'
+```
+[0, 1, 2, 3, 4, 5, 6, 7]
+```
+where each node has a parent parent node that is initially itself. Upon `union(0, 2)` we make the parent node of `0` be `2`. All the other elements (including `2`) continue to point to themselves. Consider now, `union(4, 7)` so that the parent node of `4` is now `7`. 
+
+> Define a 'root' of a set of nodes as the only node in the set that points back to itself
+
+Now if we were to do `union(0, 4)` then the root of `0` (which is `2`) will now point to the root of `4` (which is `7`). Then we have 
+```
+0 -> 2 -> 7 <- 4
+1 -> 1
+3 -> 3
+5 -> 5
+6 -> 6
+```
+with the `->` indicating who is the owner of that node. As well, note that `7 -> 7`.  `union(1, 6)` gives 
+```
+0 -> 2 -> 7 <- 4
+1 -> 6
+3 -> 3
+5 -> 5
+```
+again where `7 -> 7` and `6 -> 6`. Finally, `union(2, 6)` will take the root of `2` (which is `7`) and point it at the root of `6`: 
+```
+          6 <- 1
+          ^
+          |
+0 -> 2 -> 7 <- 4
+3 -> 3
+5 -> 5
+```
+For the `find(i)` function we start from `i` and go up the chain or parents until we find the node that is its own parent. For the `union(i, j)` function we execute `x = find(i)` and `y = find(j)` and check if `x == y`: if `x == y` then there is nothing to do, if `x != y` then set `x`'s parent to `y`. Looking at the big-O: `find(i)` must be `O(n)` - in the scenario in which the entire array is in a single line: 
+```
+0 -> 1 -> 2 -> 3 -> ... -> n
+```
+Since `union(i, j)` depends on `find(i)`, `union(i, j)` must also be `O(n)` (worst case). 
+
+## Lecture 4 (01/29)
+Worst Case big-0 running time 
+
+|               | Find     | Union    |
+|---------------|----------|----------|
+| QuickFind     | O(1)     | O(n)     |
+| QuickUnion    | O(n)     | O(n)     | 
+| WeightedUnion | O(log n) | O(log n) | 
+
+Consider a new approach in which we have 
+```
+[0, 1, 2, 3, 4, 5, 6, 7]
+```
+and execute `union(0, 1)` to give 
+```
+0 -> 1
+1 -> 1
+2 -> 2
+3 -> 3
+4 -> 4
+5 -> 5
+6 -> 6
+7 -> 7
+```
+and then `union(0, 2)` to give
+```
+0 -> 2
+1 -> 1
+2 -> 1
+3 -> 3
+4 -> 4
+5 -> 5
+6 -> 6
+7 -> 7
+```
+Then, if we do `union(3, 7)`:
+```
+0 -> 2
+1 -> 2
+2 -> 2
+3 -> 7
+4 -> 4
+5 -> 5
+6 -> 6
+7 -> 7
+```
+`union(0, 7)` results in 
+```
+     7 <- 3
+     ^
+     |
+0 -> 1 <- 2
+```
+with the rest of the numbers pointing to themselves. Finally, consider `union(2, 5)` which gives
+```
+     7 <- 3 <- 5
+     ^
+     |
+0 -> 1 <- 2
+```
+The rule we use to determine where to point a node is to link the root of the smaller tree to the bigger tree. If the height is `n` then the big O is not more than `O(log_2 n)`
