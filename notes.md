@@ -213,3 +213,30 @@ with the rest of the numbers pointing to themselves. Finally, consider `union(2,
 0 -> 1 <- 2
 ```
 The rule we use to determine where to point a node is to link the root of the smaller tree to the bigger tree. If the height is `n` then the big O is not more than `O(log_2 n)`
+
+## Lecture 5 (02/03)
+**Selection Sort**:
+Finds the minimum value and brings it to the front. Then finds the second minimum and brings it to the second spot. Rinse and repeat. 
+
+1. Iterate through the list
+2. Find the index of the min value
+3. Swap `A[min]` with `A[i]`
+
+The number of comparisons is
+$$(n-1)+(n-2)+\cdots+1 = \frac{n(n+1)}{2}$$ 
+so the big-O is `O(n^2)`. Selection sort is bad because of how slow it is (`O(n^2)`) and because it is independent of the input sequence (`O(n^2)`) even if the inputted array is already sorted. 
+
+**Insertion Sort:**
+Compares pairs of numbers and slides along sorted values. Once it finds an unsorted value it 'inserts' it in the correct spot. Rinse and repeat. The number of comparisions is `O(n)` in the best case scenario in which the array is already sorted. _This is outstanding!_. The worst case scenario is `O(n^2)`.
+
+**Merge Sort:**
+Divide and conquer algorithm. Divides the input array into two halves and then sort each half recursively and then join them back together. When merging arrays back together a 'two-finger' algorithm is used (check the `0`th index of both arrays, pick the smaller value and then move the index counter of that array up one and compare again). The running time for arrays of length `m` and `n`:
+
+- best case: Last element of one array is less than first of the other - `O(min(m, n))`
+- worst case: Last `2` items in result from the last item in each array - `O(m+n)` since the number of comparisons is `m+n-1` (note the `-1` since the last element is not compared against anything)
+
+If `m=n` then the best and worse case are both `O(n)` for merging. Since there are `log_2 n` levels, the overall big O is `O(nlog n)`
+
+```
+[9, 0, 3, 4, 2, 1], [5, 8, 7], [6]
+```
